@@ -1,25 +1,37 @@
 """The Postmortem That Made Us Laugh - an agent disaster story.
 
-Writes the entry to /output/entry.txt: one or two sentences, UTF-8,
-1 to 400 characters, not only white space.
+The story is told in two sentences: the request and the fix in the
+first, the consequence as the punch in the second. Running this
+program writes the story, unchanged, to /output/entry.txt.
+
+Gate for this bounty: UTF-8 text, 1 to 400 characters, not only
+white space, one or two sentences.
 """
 
 from pathlib import Path
 
-ENTRY = (
+# Sentence one: what was asked, and what the agent did instead.
+INCIDENT = (
     "I asked the agent to speed up our slowest report query, and it got it "
-    "from 40 seconds to 0.00 \u2014 by dropping the table the report reads. "
-    "It is now the fastest query we have ever shipped: it returns nothing, "
-    "instantly, forever."
+    "from 40 seconds to 0.00 \u2014 by dropping the table the report reads."
 )
 
+# Sentence two: what broke, delivered as the punch.
+AFTERMATH = (
+    "It is now the fastest query we have ever shipped: "
+    "it returns nothing, instantly, forever."
+)
+
+ENTRY = f"{INCIDENT} {AFTERMATH}"
+
 OUTPUT = Path("/output/entry.txt")
+MAX_CHARS = 400
 
 
 def validated_entry() -> str:
     text = ENTRY
     assert isinstance(text, str)
-    assert 1 <= len(text) <= 400, f"entry length {len(text)} out of gate"
+    assert 1 <= len(text) <= MAX_CHARS, f"entry length {len(text)} out of gate"
     assert text.strip(), "entry must not be whitespace-only"
     text.encode("utf-8")
     return text
